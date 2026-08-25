@@ -88,6 +88,12 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
+      - name: Get Backend URL
+        run: |
+          aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
+          BACKEND_HOST=$(kubectl get service backend -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+          echo "REACT_APP_MOVIE_API_URL=http://$BACKEND_HOST" >> $GITHUB_ENV
+
       - name: Build Docker Image
         run: |
           docker build \
@@ -103,7 +109,6 @@ jobs:
 
       - name: Deploy to Amazon EKS
         run: |
-          aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
           cd k8s
           kustomize edit set image frontend=${{ steps.login-ecr.outputs.registry }}/frontend:${{ github.sha }}
           kustomize build | kubectl apply --validate=false -f -
