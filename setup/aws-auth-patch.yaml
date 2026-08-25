@@ -10,8 +10,16 @@ data:
       groups:
         - system:bootstrappers
         - system:nodes
+    - rolearn: arn:aws:iam::681993069705:role/voclabs
+      username: voclabs
+      groups:
+        - system:masters
   mapUsers: |
     - userarn: arn:aws:iam::681993069705:user/github-action-user
       username: github-action-role
+      groups:
+        - system:masters
+    - userarn: arn:aws:iam::681993069705:user/admin
+      username: admin
       groups:
         - system:masters

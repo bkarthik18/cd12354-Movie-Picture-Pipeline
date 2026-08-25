@@ -106,5 +106,5 @@ jobs:
           aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
           cd k8s
           kustomize edit set image frontend=${{ steps.login-ecr.outputs.registry }}/frontend:${{ github.sha }}
-          kustomize build | kubectl apply -f -
+          kustomize build | kubectl apply --validate=false -f -
           kubectl rollout status deployment/frontend --timeout=120s
